@@ -1,0 +1,65 @@
+service: mma-video-api
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-west-1
+  environment:
+    FIGHTS_TABLE: ${env:FIGHTS_TABLE}
+    COMMENTS_TABLE: ${env:COMMENTS_TABLE}
+    S3_BUCKET: ${env:S3_BUCKET}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:PutItem"
+        - "dynamodb:GetItem"
+        - "dynamodb:Query"
+        - "dynamodb:Scan"
+        - "dynamodb:DeleteItem"
+      Resource: 
+        - "arn:aws:dynamodb:${env:AWS_REGION}:*:table/${env:FIGHTS_TABLE}"
+        - "arn:aws:dynamodb:${env:AWS_REGION}:*:table/${env:COMMENTS_TABLE}"
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+        - "s3:GetObject"
+        - "s3:DeleteObject"
+      Resource: 
+        - "arn:aws:s3:::${env:S3_BUCKET}/*"
+
+functions:
+  createFight:
+    handler: handlers/fights.createFight
+    events:
+      - http:
+          path: fights
+          method: post
+  getFight:
+    handler: handlers/fights.getFight
+    events:
+      - http:
+          path: fights/{fightId}
+          method: get
+  uploadVideo:
+    handler: handlers/fights.uploadVideo
+    events:
+      - http:
+          path: fights/{fightId}/upload
+          method: post
+  addComment:
+    handler: handlers/comments.addComment
+    events:
+      - http:
+          path: fights/{fightId}/comments
+          method: post
+  getComments:
+    handler: handlers/comments.getComments
+    events:
+      - http:
+          path: fights/{fightId}/comments
+          method: get
+
+plugins:
+  - serverless-offline

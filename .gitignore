@@ -1,0 +1,20 @@
+# Ignore node modules
+node_modules/
+
+# Ignore environment variables
+.env
+.env.local
+
+# Ignore log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore serverless build artifacts
+.serverless/
+.aws-sam/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
