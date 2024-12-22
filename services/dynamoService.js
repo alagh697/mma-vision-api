@@ -31,4 +31,19 @@ const queryItems = async (tableName, keyName, keyValue) => {
   return result.Items;
 };
 
-module.exports = { putItem, getItem, queryItems };
+// Scan the entire table to get all items
+const scanItems = async (tableName) => {
+  const params = {
+    TableName: tableName,
+  };
+
+  try {
+    const result = await dynamoDB.scan(params).promise();
+    return result.Items; // Return the items fetched
+  } catch (error) {
+    console.error('Error scanning DynamoDB', error);
+    throw new Error('Error scanning DynamoDB');
+  }
+};
+
+module.exports = { putItem, getItem, queryItems, scanItems };
